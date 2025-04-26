@@ -8,6 +8,8 @@
   python3,
   copyDesktopItems,
   makeDesktopItem,
+
+  withOfficialPlugins ? true,
 }:
 stdenv.mkDerivation rec {
   pname = "sqlitestudio";
@@ -40,8 +42,33 @@ stdenv.mkDerivation rec {
       qtdeclarative
       qtscript
     ]);
+  configurePhase =
+    ''
+      runHook preConfigure
+      export SRC=$NIX_BUILD_TOP/${src.name}
+      mkdir $SRC/build-base && cd $SRC/build-base
+      qmake $SRC/SQLiteStudio3 \
+        "DEFINES += NO_AUTO_UPDATES"
+    ''
+    + lib.optionalString withOfficialPlugins ''
+      mkdir $SRC/build-plugins && cd $SRC/build-plugins
+      qmake $SRC/Plugins \
+        "PYTHON_VERSION = ${python3.pythonVersion}" \
+        "INCLUDEPATH += ${python3}/include/python${python3.pythonVersion}"
+    ''
+    + ''
+      runHook postConfigure
+    '';
 
-  qmakeFlags = [ "./SQLiteStudio3" ];
+  buildPhase =
+    ''
+      cd $SRC/build-base
+      make -j $NIX_BUILD_CORES
+    ''
+    + lib.optionalString withOfficialPlugins ''
+      cd $SRC/build-plugins
+      make -j $NIX_BUILD_CORES
+    '';
 
   desktopItems = [
     (makeDesktopItem {
@@ -56,9 +83,23 @@ stdenv.mkDerivation rec {
     })
   ];
 
+  installPhase =
+    ''
+      runHook preInstall
+      cd $SRC/build-base
+      make install INSTALL_ROOT=$out
+    ''
+    + lib.optionalString withOfficialPlugins ''
+      cd $SRC/build-plugins
+      make install INSTALL_ROOT=$out
+    ''
+    + ''
+      runHook postInstall
+    '';
+
   postInstall = ''
     install -Dm755 \
-      ./SQLiteStudio3/guiSQLiteStudio/img/sqlitestudio.svg \
+      $SRC/SQLiteStudio3/guiSQLiteStudio/img/sqlitestudio.svg \
       $out/share/pixmaps/sqlitestudio.svg
   '';
 
