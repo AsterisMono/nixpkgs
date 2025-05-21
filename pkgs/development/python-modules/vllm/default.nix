@@ -87,8 +87,8 @@ let
   cutlass = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "cutlass";
-    tag = "v3.8.0";
-    hash = "sha256-oIzlbKRdOh6gp6nRZ8udLSqleBFoFtgM7liCBlHZLOk=";
+    tag = "v3.9.2";
+    hash = lib.fakeHash;
   };
 
   flashmla = stdenv.mkDerivation {
@@ -128,8 +128,8 @@ let
     src = fetchFromGitHub {
       owner = "vllm-project";
       repo = "flash-attention";
-      rev = "dc9d410b3e2d6534a4c70724c2515f4def670a22";
-      hash = "sha256-ZQ0bOBIb+8IMmya8dmimKQ17KTBplX81IirdnBJpX5M=";
+      rev = "8798f27777fb57f447070301bf33a9f9c607f491";
+      hash = lib.fakeHash;
     };
 
     dontConfigure = true;
@@ -228,7 +228,7 @@ in
 
 buildPythonPackage rec {
   pname = "vllm";
-  version = "0.8.3";
+  version = "0.9.0";
   pyproject = true;
 
   stdenv = torch.stdenv;
@@ -237,7 +237,7 @@ buildPythonPackage rec {
     owner = "vllm-project";
     repo = pname;
     tag = "v${version}";
-    hash = "sha256-LiEBkVwJTT4WoCTk9pI0ykTjmv1pDMzksmFwVktoxMY=";
+    hash = lib.fakeHash;
   };
 
   patches = [
