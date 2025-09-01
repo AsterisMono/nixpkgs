@@ -3580,9 +3580,6 @@ with pkgs;
     };
   };
   mailnagWithPlugins = mailnag.withPlugins (builtins.attrValues mailnag.availablePlugins);
-  mailpit = callPackage ../servers/mail/mailpit {
-    libtool = if stdenv.hostPlatform.isDarwin then cctools else libtool;
-  };
 
   man = man-db;
 
@@ -12169,7 +12166,7 @@ with pkgs;
   klayout = libsForQt5.callPackage ../applications/misc/klayout { };
 
   klee = callPackage ../applications/science/logic/klee {
-    llvmPackages = llvmPackages_13;
+    llvmPackages = llvmPackages_18;
   };
 
   kmplayer = libsForQt5.callPackage ../applications/video/kmplayer { };
